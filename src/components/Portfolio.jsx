@@ -1,48 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import { Github, Linkedin, Mail, Phone, MapPin, Award, Briefcase, GraduationCap, Code, ExternalLink, Download, ChevronRight, Star, Moon, Sun, Menu, X, Upload, Eye } from 'lucide-react';
+import { Github, Linkedin, Mail, Phone, MapPin, Award, Briefcase, GraduationCap, Code, ExternalLink, Download, ChevronRight, Star, Moon, Sun, X } from 'lucide-react';
+import profilePhoto from '../assets/images/profile.jpeg';
+
+import webDevCert from "../assets/certificates/web_development_certificate.jpg";
+import dsaCert from "../assets/certificates/dsa_certificate.jpg";
+import cloudCert from "../assets/certificates/cloud_computing_certificate.jpg";
+
+import resumePdf from '../assets/resume/Shriya_Resume.pdf';
 
 export default function Portfolio() {
   const [activeSection, setActiveSection] = useState('home');
   const [scrolled, setScrolled] = useState(false);
   const [isVisible, setIsVisible] = useState({});
   const [darkMode, setDarkMode] = useState(false);
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [certImages, setCertImages] = useState({});
   const [showImageModal, setShowImageModal] = useState(null);
-  const [profilePhoto, setProfilePhoto] = useState(null);
-  const [resumeFile, setResumeFile] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
 
-  // Load saved data on mount
-  useEffect(() => {
-    const loadSavedData = async () => {
-      try {
-        // Load profile photo
-        const photoResult = await window.storage.get('profile-photo');
-        if (photoResult) {
-          setProfilePhoto(photoResult.value);
-        }
+  // Asset paths - Update these paths based on your folder structure
+ const assets = {
+  profilePhoto,
+  resume: resumePdf,
+  certificates: {
+    webDev: webDevCert,
+    dsa: dsaCert,
+    cloud: cloudCert
+  }
+};
 
-        // Load resume
-        const resumeResult = await window.storage.get('resume-file');
-        if (resumeResult) {
-          setResumeFile(JSON.parse(resumeResult.value));
-        }
-
-        // Load certificate images
-        const certsResult = await window.storage.get('cert-images');
-        if (certsResult) {
-          setCertImages(JSON.parse(certsResult.value));
-        }
-      } catch (error) {
-        console.log('No saved data found or error loading:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    loadSavedData();
-  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -70,83 +53,10 @@ export default function Portfolio() {
 
   const scrollToSection = (id) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-    setMobileMenuOpen(false);
-  };
-
-  const handleImageUpload = async (certIndex, event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const newImages = { ...certImages, [certIndex]: reader.result };
-        setCertImages(newImages);
-        
-        // Save to storage
-        try {
-          await window.storage.set('cert-images', JSON.stringify(newImages));
-        } catch (error) {
-          console.error('Error saving certificate image:', error);
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleProfilePhotoUpload = async (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        setProfilePhoto(reader.result);
-        
-        // Save to storage
-        try {
-          await window.storage.set('profile-photo', reader.result);
-        } catch (error) {
-          console.error('Error saving profile photo:', error);
-        }
-      };
-      reader.readAsDataURL(file);
-    }
-  };
-
-  const handleResumeUpload = async (event) => {
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const resumeData = {
-          name: file.name,
-          data: reader.result,
-          type: file.type
-        };
-        setResumeFile(resumeData);
-        
-        // Save to storage
-        try {
-          await window.storage.set('resume-file', JSON.stringify(resumeData));
-          alert('Resume uploaded successfully!');
-        } catch (error) {
-          console.error('Error saving resume:', error);
-          alert('Error uploading resume. Please try again.');
-        }
-      };
-      reader.readAsDataURL(file);
-    }
   };
 
   const downloadResume = () => {
-    if (resumeFile) {
-      // Create a download link for the uploaded resume
-      const link = document.createElement('a');
-      link.href = resumeFile.data;
-      link.download = resumeFile.name;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } else {
-      alert('Please upload your resume first! Click the Resume button to upload.');
-    }
+    window.open(assets.resume, '_blank');
   };
 
   const portfolio = {
@@ -167,135 +77,70 @@ export default function Portfolio() {
         company: "Pisoft Informative pvt ltd",
         period: "Jan 2025 - july 2025",
         description: "Worked on real-world web applications using MERN stack technologies, focusing primarily on frontend development with React.",
-        achievements: ["Developed responsive and reusable UI components using React and Tailwind CSS",
-      "Integrated REST APIs and handled data flow between frontend and backend",
-      "Collaborated with backend developers and designers in an Agile environment",
-      "Used Git and GitHub for version control and team collaboration",
-      "Improved UI performance and fixed bugs in existing modules"]
+        achievements: [
+          "Developed responsive and reusable UI components using React and Tailwind CSS",
+          "Integrated REST APIs and handled data flow between frontend and backend",
+          "Collaborated with backend developers and designers in an Agile environment",
+          "Used Git and GitHub for version control and team collaboration",
+          "Improved UI performance and fixed bugs in existing modules"
+        ]
       },
     ],
     
     skills: {
-  "Programming Languages": ["Java", "JavaScript"],
-  
-  "Frontend": [
-    "HTML5",
-    "CSS3",
-    "JavaScript",
-    "React.js",
-    "Tailwind CSS",
-    "Responsive Web Design"
-  ],
-  
-  "Backend": [
-    "Node.js",
-    "Express.js",
-    "MongoDB",
-    "Mongoose",
-    "REST APIs"
-  ],
-  
-  "Databases": [
-    "MongoDB",
-    "SQL"
-  ],
-  
-  "Tools & Technologies": [
-    "Git",
-    "GitHub",
-    "JWT Authentication",
-    "Postman",
-    "VS Code"
-  ],
-  
-  "Core CS Concepts": [
-    "Data Structures & Algorithms",
-    "Object-Oriented Programming (OOPs)",
-    "Operating Systems",
-    "Computer Networks"
-  ]
-},
+      "Programming Languages": ["Java", "JavaScript"],
+      "Frontend": ["HTML5", "CSS3", "JavaScript", "React.js", "Tailwind CSS", "Responsive Web Design"],
+      "Backend": ["Node.js", "Express.js", "MongoDB", "Mongoose", "REST APIs"],
+      "Databases": ["MongoDB", "SQL"],
+      "Tools & Technologies": ["Git", "GitHub", "JWT Authentication", "Postman", "VS Code"],
+      "Core CS Concepts": ["Data Structures & Algorithms", "Object-Oriented Programming (OOPs)", "Operating Systems", "Computer Networks"]
+    },
 
     projects: [
-   {
-    name: "DevHire – Intelligent Developer Hiring Platform",
-    description:
-      "A full-stack MERN hiring platform that connects recruiters and developers through role-based authentication, developer portfolios, and skill-based search, featuring a modern, responsive dashboard UI.",
-    tech: [
-      "React.js",
-      "Vite",
-      "Tailwind CSS",
-      "ShadCN/UI",
-      "Framer Motion",
-      "Node.js",
-      "Express.js",
-      "MongoDB",
-      "JWT Authentication",
-      "REST APIs"
+      {
+        name: "DevHire – Intelligent Developer Hiring Platform",
+        description: "A full-stack MERN hiring platform that connects recruiters and developers through role-based authentication, developer portfolios, and skill-based search, featuring a modern, responsive dashboard UI.",
+        tech: ["React.js", "Vite", "Tailwind CSS", "ShadCN/UI", "Framer Motion", "Node.js", "Express.js", "MongoDB", "JWT Authentication", "REST APIs"],
+        link: "https://github.com/Shriyaa22/Devhire"
+      },
+      {
+        name: "CodeSyncc",
+        description: "A collaborative coding platform that enables real-time code sharing and synchronization between users, designed to support peer learning and interview preparation with a smooth, interactive UI.",
+        tech: ["React.js", "JavaScript", "HTML5", "CSS3", "Node.js", "Express.js", "Socket.IO", "MongoDB", "REST APIs"],
+        link: "https://github.com/Shriyaa22/CodeSyncc"
+      },
+      {
+        name: "Expense Tracker",
+        description: "A full-stack expense tracking application that allows users to record, categorize, and analyze daily expenses with secure authentication and a clean, responsive UI.",
+        tech: ["React.js", "JavaScript", "HTML5", "CSS3", "Node.js", "Express.js", "MongoDB", "JWT Authentication", "REST APIs"],
+        link: "https://github.com/Shriyaa22/expense-"
+      }
     ],
-    link: "https://github.com/Shriyaa22/Devhire"
-  },
-  {
-  name: "CodeSyncc",
-  description:
-    "A collaborative coding platform that enables real-time code sharing and synchronization between users, designed to support peer learning and interview preparation with a smooth, interactive UI.",
-  tech: [
-    "React.js",
-    "JavaScript",
-    "HTML5",
-    "CSS3",
-    "Node.js",
-    "Express.js",
-    "Socket.IO",
-    "MongoDB",
-    "REST APIs"
-  ],
-  link: "https://github.com/Shriyaa22/CodeSyncc"
-},
-  {
-  name: "Expense Tracker",
-  description:
-    "A full-stack expense tracking application that allows users to record, categorize, and analyze daily expenses with secure authentication and a clean, responsive UI.",
-  tech: [
-    "React.js",
-    "JavaScript",
-    "HTML5",
-    "CSS3",
-    "Node.js",
-    "Express.js",
-    "MongoDB",
-    "JWT Authentication",
-    "REST APIs"
-  ],
-  link: "https://github.com/Shriyaa22/expense-"
-}
-
-],
-
-
     
     certifications: [
-  {
-    name: "Introductory to Web Development (HTML, CSS, JavaScript)",
-    issuer: "Coursera",
-    year: "2021"
-  },
-  {
-    name: "Data Structure and Algorithms",
-    issuer: "Coursera",
-    year: "2024"
-  },
-   {
-    name: "Introduction to Cloud Computing",
-    issuer: "IBM,Coursera",
-    year: "2024"
-  }
-],
-
+      {
+        name: "Introductory to Web Development (HTML, CSS, JavaScript)",
+        issuer: "Coursera",
+        year: "2021",
+        image: 'webDev'
+      },
+      {
+        name: "Data Structure and Algorithms",
+        issuer: "Coursera",
+        year: "2024",
+        image: 'dsa'
+      },
+      {
+        name: "Introduction to Cloud Computing",
+        issuer: "IBM, Coursera",
+        year: "2024",
+        image: 'cloud'
+      }
+    ],
     
     education: {
       degree: "Bachelor of Engineering in Computer Science",
-      institution: "Chitkara University,Punjab",
+      institution: "Chitkara University, Punjab",
       year: "2025",
       cgpa: "8.75/10"
     }
@@ -471,31 +316,21 @@ export default function Portfolio() {
               <button onClick={() => scrollToSection('contact')} style={styles.button}>
                 Get In Touch
               </button>
-              <label style={{
-                ...styles.button,
-                background: darkMode ? '#374151' : '#ffffff',
-                color: darkMode ? '#f3f4f6' : '#111827',
-                border: `2px solid ${darkMode ? '#4b5563' : '#e5e7eb'}`,
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
-                cursor: 'pointer'
-              }}>
+              <button
+                onClick={downloadResume}
+                style={{
+                  ...styles.button,
+                  background: darkMode ? '#374151' : '#ffffff',
+                  color: darkMode ? '#f3f4f6' : '#111827',
+                  border: `2px solid ${darkMode ? '#4b5563' : '#e5e7eb'}`,
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '8px'
+                }}
+              >
                 <Download size={18} />
-                {resumeFile ? 'Download Resume' : 'Upload Resume'}
-                <input
-                  type="file"
-                  accept=".pdf,.doc,.docx"
-                  onChange={handleResumeUpload}
-                  onClick={(e) => {
-                    if (resumeFile) {
-                      e.preventDefault();
-                      downloadResume();
-                    }
-                  }}
-                  style={{ display: 'none' }}
-                />
-              </label>
+                View Resume
+              </button>
             </div>
             <div style={{ display: 'flex', gap: '16px' }}>
               <a href={portfolio.github} target="_blank" rel="noopener noreferrer" 
@@ -539,62 +374,9 @@ export default function Portfolio() {
             transition: 'all 1s ease 0.3s'
           }}>
             <div style={{ position: 'relative', height: '384px' }}>
-              {profilePhoto ? (
-                <div style={{ width: '100%', height: '384px', borderRadius: '24px', overflow: 'hidden', boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)' }}>
-                  <img src={profilePhoto} alt="Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                </div>
-              ) : (
-                <>
-                  <div style={{
-                    width: '100%',
-                    height: '384px',
-                    background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #ea580c 100%)',
-                    borderRadius: '24px',
-                    transform: 'rotate(6deg)',
-                    position: 'absolute',
-                    opacity: 0.8
-                  }} className="animate-pulse-slow"></div>
-                  <div style={{
-                    width: '100%',
-                    height: '384px',
-                    background: 'linear-gradient(135deg, #f59e0b 0%, #f97316 50%, #dc2626 100%)',
-                    borderRadius: '24px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    position: 'absolute'
-                  }}>
-                    <Code size={120} color="#ffffff" style={{ opacity: 0.3 }} className="animate-float" />
-                  </div>
-                </>
-              )}
-              
-              {!profilePhoto && (
-                <div style={{ position: 'absolute', bottom: '16px', left: '50%', transform: 'translateX(-50%)', zIndex: 10 }}>
-                  <label style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    padding: '12px 24px',
-                    background: 'linear-gradient(135deg, #f59e0b 0%, #f97316 100%)',
-                    color: '#ffffff',
-                    borderRadius: '24px',
-                    cursor: 'pointer',
-                    fontWeight: '600',
-                    boxShadow: '0 4px 15px rgba(245, 158, 11, 0.4)',
-                    fontSize: '14px'
-                  }}>
-                    <Upload size={20} />
-                    Upload Photo
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleProfilePhotoUpload}
-                      style={{ display: 'none' }}
-                    />
-                  </label>
-                </div>
-              )}
+              <div style={{ width: '100%', height: '384px', borderRadius: '24px', overflow: 'hidden', boxShadow: '0 20px 60px rgba(0, 0, 0, 0.3)' }}>
+                <img src={assets.profilePhoto} alt="Shriya's Profile" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              </div>
             </div>
           </div>
         </div>
@@ -833,60 +615,17 @@ export default function Portfolio() {
                   ? 'linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(249, 115, 22, 0.1) 100%)'
                   : 'linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%)',
                 position: 'relative',
-                overflow: 'hidden'
-              }}>
-                {certImages[idx] ? (
-                  <div style={{ marginBottom: '16px', position: 'relative' }}>
-                    <img 
-                      src={certImages[idx]} 
-                      alt={cert.name}
-                      style={{ width: '100%', height: '192px', objectFit: 'cover', borderRadius: '12px', boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)' }}
-                    />
-                    <button
-                      onClick={() => setShowImageModal(certImages[idx])}
-                      style={{
-                        position: 'absolute',
-                        top: '8px',
-                        right: '8px',
-                        padding: '8px',
-                        background: '#ffffff',
-                        border: 'none',
-                        borderRadius: '50%',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)'
-                      }}
-                    >
-                      <Eye size={20} color="#f59e0b" />
-                    </button>
-                  </div>
-                ) : (
-                  <div style={{ marginBottom: '16px' }}>
-                    <label style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: '8px',
-                      padding: '8px 16px',
-                      background: '#f59e0b',
-                      color: '#ffffff',
-                      borderRadius: '8px',
-                      cursor: 'pointer',
-                      fontSize: '14px',
-                      fontWeight: '600',
-                      transition: 'all 0.3s ease'
-                    }}>
-                      <Upload size={16} />
-                      Upload Certificate
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => handleImageUpload(idx, e)}
-                        style={{ display: 'none' }}
-                      />
-                    </label>
-                  </div>
-                )}
+                overflow: 'hidden',
+                cursor: 'pointer'
+              }}
+              onClick={() => setShowImageModal(assets.certificates[cert.image])}>
+                <div style={{ marginBottom: '16px', position: 'relative' }}>
+                  <img 
+                    src={assets.certificates[cert.image]} 
+                    alt={cert.name}
+                    style={{ width: '100%', height: '192px', objectFit: 'cover', borderRadius: '12px', boxShadow: '0 4px 15px rgba(0, 0, 0, 0.2)' }}
+                  />
+                </div>
 
                 <Award color="#f59e0b" size={36} style={{ marginBottom: '16px' }} />
                 <h3 style={{ fontSize: '18px', fontWeight: 'bold', color: darkMode ? '#f3f4f6' : '#111827', marginBottom: '8px' }}>
@@ -900,6 +639,7 @@ export default function Portfolio() {
         </div>
       </section>
 
+      {/* Image Modal */}
       {showImageModal && (
         <div 
           onClick={() => setShowImageModal(null)}
@@ -994,4 +734,4 @@ export default function Portfolio() {
       </footer>
     </div>
   );
-}
+} 
